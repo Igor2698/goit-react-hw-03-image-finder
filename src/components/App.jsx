@@ -8,6 +8,16 @@ import { getImage } from 'servises/image-api';
 import { Button } from './Button/Button';
 import { Modal } from './Modal/Modal';
 
+import { ImagePendingView } from './ImagePendingView';
+import TextErrorView from './TextErrorView';
+
+const Status = {
+  IDLE: 'idle',
+  PENDING: 'pending',
+  RESOLVED: 'resolved',
+  REJECTED: 'rejected',
+};
+
 export class App extends Component {
   state = {
     query: '',
@@ -15,6 +25,8 @@ export class App extends Component {
     images: { hits: [] },
     EndOfImages: false,
     showModal: false,
+    status: Status.IDLE,
+    error: '',
   };
 
   componentDidUpdate(_, prevState) {
@@ -24,11 +36,13 @@ export class App extends Component {
     const nextquery = this.state.query;
 
     if (prevquery !== nextquery) {
-      this.setState({ EndOfImages: false });
+      this.setState({ status: Status.PENDING, EndOfImages: false });
+
       getImage(nextquery)
         .then(newImages => {
           this.setState({
             images: newImages,
+            status: Status.RESOLVED,
           });
 
           const totalPages = Math.ceil(newImages.totalHits / 12);
@@ -36,7 +50,7 @@ export class App extends Component {
             this.setState({ EndOfImages: true });
           }
         })
-        .catch(error => this.setState({ error }));
+        .catch(error => this.setState({ error, status: Status.REJECTED }));
     }
   }
 
@@ -70,31 +84,55 @@ export class App extends Component {
   };
 
   render() {
-    const { images, EndOfImages, showModal, imageForModal } = this.state;
+    const { images, EndOfImages, showModal, imageForModal, status, error } =
+      this.state;
 
-    return (
-      <>
-        <Section>
-          <SearchBar onSubmit={this.handleSearchBarSubmit}></SearchBar>
-        </Section>
-        <Section>
-          {images.hits && (
-            <>
-              <ImageGallery>
-                <ImageGalleryItem
-                  images={images.hits}
-                  onClick={largeImageURL => this.toggleModal(largeImageURL)}
-                ></ImageGalleryItem>
-              </ImageGallery>
-              {!EndOfImages && <Button onClick={this.onLoadMoreClick}></Button>}
-            </>
+    if (status === 'idle') {
+      return (
+        <>
+          <Section>
+            <SearchBar onSubmit={this.handleSearchBarSubmit}></SearchBar>
+          </Section>
+          <div>Here will be your pictures. Please enter value</div>;
+        </>
+      );
+    }
+
+    if (status === 'pending') {
+      return <ImagePendingView />;
+    }
+
+    if (status === 'rejected') {
+      return <TextErrorView message={error.message} />;
+    }
+
+    if (status === 'resolved') {
+      return (
+        <>
+          <Section>
+            <SearchBar onSubmit={this.handleSearchBarSubmit}></SearchBar>
+          </Section>
+          <Section>
+            {images.hits && (
+              <>
+                <ImageGallery>
+                  <ImageGalleryItem
+                    images={images.hits}
+                    onClick={largeImageURL => this.toggleModal(largeImageURL)}
+                  ></ImageGalleryItem>
+                </ImageGallery>
+                {!EndOfImages && (
+                  <Button onClick={this.onLoadMoreClick}></Button>
+                )}
+              </>
+            )}
+          </Section>
+          {showModal && (
+            <Modal onClose={this.toggleModal} image={imageForModal}></Modal>
           )}
-        </Section>
-        {showModal && (
-          <Modal onClose={this.toggleModal} image={imageForModal}></Modal>
-        )}
-        <ToastContainer autoClose={3000} />
-      </>
-    );
+          <ToastContainer autoClose={3000} />
+        </>
+      );
+    }
   }
 }
