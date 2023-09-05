@@ -1,0 +1,21 @@
+.mainSection {
+  padding-top: 40px;
+}
+
+.mainDiv {
+  margin: 0 auto;
+  padding-right: 20px;
+  padding-left: 20px;
+}
+
+@media screen and (min-width: 375px) {
+  .mainDiv {
+    width: 375px;
+  }
+}
+
+@media screen and (min-width: 1440px) {
+  .mainDiv {
+    width: 1440px;
+  }
+}

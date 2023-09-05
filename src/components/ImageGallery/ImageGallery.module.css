@@ -1,0 +1,12 @@
+.listGallery {
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 0;
+  display: flex;
+}
+
+.idleText {
+  font-size: 27px;
+  text-align: center;
+}

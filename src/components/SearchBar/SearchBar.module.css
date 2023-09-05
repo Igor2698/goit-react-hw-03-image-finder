@@ -1,0 +1,33 @@
+.headerForm {
+  display: flex;
+  justify-content: center;
+}
+
+.inputForm {
+  width: 800px;
+  height: 25px;
+  margin-right: 40px;
+  padding: 10px;
+  font-size: 20px;
+}
+
+.buttonForm {
+  cursor: pointer;
+  color: #fff;
+  background: #00f;
+  border-radius: 4px;
+  margin-top: 25px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 14px 30px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.formSearchBar {
+  text-align: center;
+  margin-bottom: 40px;
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: flex-end;
+}
