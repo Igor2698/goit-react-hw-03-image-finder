@@ -31,7 +31,7 @@ export class Modal extends Component {
     return createPortal(
       <ModalBackdrop onClick={this.handleBackdropClick}>
         <ModalContent>
-          <ImgForModal src={this.props.link} alt="" />
+          <ImgForModal src={this.props.image} alt="" />
         </ModalContent>
       </ModalBackdrop>,
       modalRoot

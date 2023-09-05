@@ -11,29 +11,36 @@ const searchParams = new URLSearchParams({
   per_page: 40,
 });
 
-export class ImagesApiService {
-  SearchQuery = '';
-  page = 1;
-  totalPages = 0;
-  limit = 40;
-
-  async getImage(value) {
-    const url = `${keys.BASE_URL}?${searchParams}&q=${value}&page=${this.page}`;
-
+export async function getImage(value, page = 1) {
+  const url = `${keys.BASE_URL}?${searchParams}&q=${value}&page=${page}&per_page=12`;
+  try {
     const response = await fetch(url);
     if (response.ok) {
       const data = await response.json();
       return data;
+    } else {
+      throw new Error(`Did not find image with value ${value}`);
     }
-
-    return Promise.reject(new Error(`Did not find image wiwh value ${value}`));
-  }
-
-  incrementPage() {
-    this.page += 1;
-  }
-
-  resetPage() {
-    this.page = 1;
+  } catch (error) {
+    throw error;
   }
 }
+
+// page=${this.page}
+
+// async getImage
+
+//   incrementPage() {
+//     this.page += 1;
+//   }
+
+//   resetPage() {
+//     this.page = 1;
+//   }
+// }
+
+// export class ImagesApiService {
+//   SearchQuery = '';
+//   page = 1;
+//   totalPages = 0;
+//   limit = 40;

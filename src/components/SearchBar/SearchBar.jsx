@@ -8,10 +8,10 @@ export const SearchBar = ({ onSubmit }) => {
   return (
     <Formik
       initialValues={{
-        image: '',
+        query: '',
       }}
       onSubmit={(values, actions) => {
-        if (values.image.trim() === '') {
+        if (values.query.trim() === '') {
           toast.error('Please enter value of image');
 
           return;
@@ -33,7 +33,7 @@ export const SearchBar = ({ onSubmit }) => {
             autoComplete="off"
             autoFocus
             placeholder="Search images and photos"
-            name="image"
+            name="query"
           />
         </Form>
       </header>
