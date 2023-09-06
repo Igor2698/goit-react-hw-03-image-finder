@@ -5,7 +5,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import SearchBar from './SearchBar';
 import ImageGallery from './ImageGallery';
 import Section from './Section';
-import ImageGalleryItem from './ImageGalleryItem';
+
 import { getImage } from 'servises/image-api';
 import Button from './Button';
 import Modal from './Modal';
@@ -36,7 +36,7 @@ export class App extends Component {
   async componentDidUpdate(_, prevState) {
     const prevquery = prevState.query;
     const nextquery = this.state.query;
-    const { page, images } = this.state;
+    const { page } = this.state;
 
     if (prevquery !== nextquery || page !== prevState.page) {
       try {
@@ -113,12 +113,8 @@ export class App extends Component {
       status,
       error,
       isLoading,
-      newImages,
-      page,
       EndOfImages,
     } = this.state;
-
-    const totalPages = Math.ceil(newImages.totalHits / 12);
 
     return (
       <>
