@@ -38,6 +38,11 @@ export class App extends Component {
     const { page } = this.state;
 
     if (prevquery !== nextquery) {
+      if (nextquery.trim() === '') {
+        toast.error('Please enter value of image');
+
+        return;
+      }
       this.setState({ status: Status.PENDING, EndOfImages: false });
 
       getImage(nextquery, page)

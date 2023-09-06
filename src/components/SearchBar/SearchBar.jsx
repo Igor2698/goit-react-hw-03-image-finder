@@ -12,11 +12,11 @@ const SearchBar = ({ onSubmit }) => {
         query: '',
       }}
       onSubmit={(values, actions) => {
-        if (values.query.trim() === '') {
-          toast.error('Please enter value of image');
+        // if (values.query.trim() === '') {
+        //   toast.error('Please enter value of image');
 
-          return;
-        }
+        //   return;
+        // }
 
         onSubmit(values);
         actions.resetForm();
