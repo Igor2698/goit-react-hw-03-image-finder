@@ -35,11 +35,12 @@ export class App extends Component {
   componentDidUpdate(_, prevState) {
     const prevquery = prevState.query;
     const nextquery = this.state.query;
+    const { page } = this.state;
 
     if (prevquery !== nextquery) {
       this.setState({ status: Status.PENDING, EndOfImages: false });
 
-      getImage(nextquery)
+      getImage(nextquery, page)
         .then(newImages => {
           this.setState({
             images: newImages,
@@ -73,7 +74,6 @@ export class App extends Component {
         getImage(query, page)
           .then(newImages => {
             const totalPages = Math.ceil(newImages.totalHits / 12);
-            console.log(totalPages);
             if (page >= totalPages) {
               this.setState({ EndOfImages: true });
               toast.warning(
@@ -92,8 +92,8 @@ export class App extends Component {
   toggleModal = imageForModal => {
     this.setState(({ showModal }) => ({
       showModal: !showModal,
+      imageForModal,
     }));
-    this.setState({ imageForModal });
   };
 
   render() {
