@@ -1,5 +1,7 @@
 import { Component } from 'react';
-
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
 import SearchBar from './SearchBar';
 import ImageGallery from './ImageGallery';
 import Section from './Section';
@@ -31,8 +33,6 @@ export class App extends Component {
   };
 
   componentDidUpdate(_, prevState) {
-    const { page } = this.state;
-
     const prevquery = prevState.query;
     const nextquery = this.state.query;
 
@@ -46,8 +46,12 @@ export class App extends Component {
             status: Status.RESOLVED,
           });
 
-          const totalPages = Math.ceil(newImages.totalHits / 12);
-          if (page >= totalPages || 12 > newImages.totalHits) {
+          toast.success(`Cool! We found ${newImages.totalHits} images`);
+
+          if (12 > newImages.totalHits) {
+            toast.warning(
+              `We are sorry but you have reached the end of images`
+            );
             this.setState({ EndOfImages: true });
           }
         })
@@ -68,6 +72,14 @@ export class App extends Component {
 
         getImage(query, page)
           .then(newImages => {
+            const totalPages = Math.ceil(newImages.totalHits / 12);
+            console.log(totalPages);
+            if (page >= totalPages) {
+              this.setState({ EndOfImages: true });
+              toast.warning(
+                `We are sorry but you have reached the end of images`
+              );
+            }
             this.setState(prevState => ({
               images: { hits: [...prevState.images.hits, ...newImages.hits] },
             }));
@@ -125,6 +137,7 @@ export class App extends Component {
           {showModal && (
             <Modal onClose={this.toggleModal} image={imageForModal}></Modal>
           )}
+          <ToastContainer autoClose={3000} />
         </>
       );
     }

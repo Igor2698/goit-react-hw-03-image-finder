@@ -14,6 +14,12 @@
   }
 }
 
+@media screen and (min-width: 768px) {
+  .mainDiv {
+    width: 768px;
+  }
+}
+
 @media screen and (min-width: 1440px) {
   .mainDiv {
     width: 1440px;
