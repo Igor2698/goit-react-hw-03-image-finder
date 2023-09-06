@@ -121,19 +121,15 @@ export class App extends Component {
         <ToastContainer autoClose={3000} />
         <Section>
           <SearchBar onSubmit={this.handleSearchBarSubmit}></SearchBar>
+          {status === 'idle' && <EmptyValue></EmptyValue>}
         </Section>
-        {status === 'idle' && (
-          <>
-            <EmptyValue></EmptyValue>
-          </>
-        )}
 
         {isLoading && <ImagePendingView />}
 
         {status === 'rejected' && <TextErrorView message={error.message} />}
 
         {status === 'resolved' && (
-          <>
+          <Section>
             <ImageGallery
               onImgClick={this.toggleModal}
               images={images}
@@ -143,7 +139,7 @@ export class App extends Component {
               <Modal onClose={this.toggleModal} image={imageForModal}></Modal>
             )}
             {!EndOfImages && <Button onClick={this.onLoadMoreClick}></Button>}
-          </>
+          </Section>
         )}
       </>
     );

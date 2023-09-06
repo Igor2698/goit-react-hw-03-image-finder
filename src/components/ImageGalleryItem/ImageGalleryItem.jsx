@@ -9,7 +9,7 @@ const ImageGalleryItem = ({ images, onClick }) => {
         className={css.itemGallery}
         onClick={() => onClick(largeImageURL)}
       >
-        <img src={webformatURL} width="400" height="300" alt={tags} />
+        <img src={webformatURL} width="100%" height="100%" alt={tags} />
       </li>
     );
   });
