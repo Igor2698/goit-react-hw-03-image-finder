@@ -1,6 +1,7 @@
 import css from './ImageGalleryItem.module.css';
-
-export const ImageGalleryItem = ({ images, onClick }) => {
+import PropTypes from 'prop-types';
+const ImageGalleryItem = ({ images, onClick }) => {
+  console.log(images);
   return images.map(eachImg => {
     const { id, webformatURL, tags, largeImageURL } = eachImg;
     return (
@@ -13,4 +14,18 @@ export const ImageGalleryItem = ({ images, onClick }) => {
       </li>
     );
   });
+};
+
+export default ImageGalleryItem;
+
+ImageGalleryItem.propTypes = {
+  onClick: PropTypes.func.isRequired,
+  images: PropTypes.arrayOf(
+    PropTypes.shape({
+      webformatURL: PropTypes.string.isRequired,
+      id: PropTypes.number.isRequired,
+      tags: PropTypes.string.isRequired,
+      largeImageURL: PropTypes.string.isRequired,
+    })
+  ),
 };

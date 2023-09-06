@@ -1,4 +1,5 @@
 import css from './Section.module.css';
+import PropTypes from 'prop-types';
 
 const Section = ({ children }) => {
   return (
@@ -9,3 +10,7 @@ const Section = ({ children }) => {
 };
 
 export default Section;
+
+Section.propTypes = {
+  children: PropTypes.node.isRequired,
+};

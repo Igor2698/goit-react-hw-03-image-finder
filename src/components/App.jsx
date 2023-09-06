@@ -1,12 +1,13 @@
 import { Component } from 'react';
-import { ToastContainer } from 'react-toastify';
-import { SearchBar } from './SearchBar/SearchBar';
-import { ImageGallery } from './ImageGallery/ImageGallery';
-import Section from './Section/Section';
-import { ImageGalleryItem } from './ImageGalleryItem/ImageGalleryItem';
+
+import SearchBar from './SearchBar';
+import ImageGallery from './ImageGallery';
+import Section from './Section';
+import ImageGalleryItem from './ImageGalleryItem';
 import { getImage } from 'servises/image-api';
-import { Button } from './Button/Button';
-import { Modal } from './Modal/Modal';
+import Button from './Button';
+import Modal from './Modal';
+import EmptyValue from './EmptyValue';
 
 import { ImagePendingView } from './ImagePendingView';
 import TextErrorView from './TextErrorView';
@@ -89,12 +90,10 @@ export class App extends Component {
 
     if (status === 'idle') {
       return (
-        <>
-          <Section>
-            <SearchBar onSubmit={this.handleSearchBarSubmit}></SearchBar>
-          </Section>
-          <div>Here will be your pictures. Please enter value</div>;
-        </>
+        <Section>
+          <SearchBar onSubmit={this.handleSearchBarSubmit}></SearchBar>
+          <EmptyValue></EmptyValue>
+        </Section>
       );
     }
 
@@ -113,24 +112,19 @@ export class App extends Component {
             <SearchBar onSubmit={this.handleSearchBarSubmit}></SearchBar>
           </Section>
           <Section>
-            {images.hits && (
-              <>
-                <ImageGallery>
-                  <ImageGalleryItem
-                    images={images.hits}
-                    onClick={largeImageURL => this.toggleModal(largeImageURL)}
-                  ></ImageGalleryItem>
-                </ImageGallery>
-                {!EndOfImages && (
-                  <Button onClick={this.onLoadMoreClick}></Button>
-                )}
-              </>
-            )}
+            <>
+              <ImageGallery>
+                <ImageGalleryItem
+                  images={images.hits}
+                  onClick={largeImageURL => this.toggleModal(largeImageURL)}
+                ></ImageGalleryItem>
+              </ImageGallery>
+              {!EndOfImages && <Button onClick={this.onLoadMoreClick}></Button>}
+            </>
           </Section>
           {showModal && (
             <Modal onClose={this.toggleModal} image={imageForModal}></Modal>
           )}
-          <ToastContainer autoClose={3000} />
         </>
       );
     }

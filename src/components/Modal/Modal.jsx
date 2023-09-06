@@ -1,17 +1,16 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import css from './Modal.module.css';
 import { createPortal } from 'react-dom';
-import { ModalBackdrop, ModalContent, ImgForModal } from './Modal.styled';
 
 const modalRoot = document.querySelector('#modal-root');
 
-export class Modal extends Component {
+class Modal extends Component {
   componentDidMount() {
-    console.log('Modal componentDidMount');
     window.addEventListener('keydown', this.handleKeyDown);
   }
 
   componentWillUnmount() {
-    console.log('Modal componentWillUnmount');
     window.removeEventListener('keydown', this.handleKeyDown);
   }
 
@@ -29,12 +28,19 @@ export class Modal extends Component {
 
   render() {
     return createPortal(
-      <ModalBackdrop onClick={this.handleBackdropClick}>
-        <ModalContent>
-          <ImgForModal src={this.props.image} alt="" />
-        </ModalContent>
-      </ModalBackdrop>,
+      <div className={css.backdrop} onClick={this.handleBackdropClick}>
+        <div className={css.modalContent}>
+          <img className={css.imgForModal} src={this.props.image} alt="" />
+        </div>
+      </div>,
       modalRoot
     );
   }
 }
+
+export default Modal;
+
+Modal.propTypes = {
+  onClose: PropTypes.func.isRequired,
+  image: PropTypes.string.isRequired,
+};

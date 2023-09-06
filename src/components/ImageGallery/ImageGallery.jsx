@@ -1,14 +1,14 @@
 import css from './ImageGallery.module.css';
+import PropTypes from 'prop-types';
 
 import 'react-toastify/dist/ReactToastify.css';
 
-// const Status = {
-//   IDLE: 'idle',
-//   PENDING: 'pending',
-//   RESOLVED: 'resolved',
-//   REJECTED: 'rejected',
-// };
-
-export const ImageGallery = ({ children }) => {
+const ImageGallery = ({ children }) => {
   return <ul className={css.listGallery}>{children}</ul>;
+};
+
+export default ImageGallery;
+
+ImageGallery.propTypes = {
+  children: PropTypes.node.isRequired, 
 };
