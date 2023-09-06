@@ -1,7 +1,7 @@
 import { Component } from 'react';
-import { toast } from 'react-toastify';
+
 import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import SearchBar from './SearchBar';
 import ImageGallery from './ImageGallery';
 import Section from './Section';
@@ -16,7 +16,6 @@ import TextErrorView from './TextErrorView';
 
 const Status = {
   IDLE: 'idle',
-  PENDING: 'pending',
   RESOLVED: 'resolved',
   REJECTED: 'rejected',
 };
@@ -25,73 +24,78 @@ export class App extends Component {
   state = {
     query: '',
     page: 1,
-    images: { hits: [] },
+    images: [],
     EndOfImages: false,
     showModal: false,
     status: Status.IDLE,
     error: '',
+    isLoading: false,
+    newImages: '',
   };
 
-  componentDidUpdate(_, prevState) {
+  async componentDidUpdate(_, prevState) {
     const prevquery = prevState.query;
     const nextquery = this.state.query;
-    const { page } = this.state;
+    const { page, images } = this.state;
 
-    if (prevquery !== nextquery) {
-      if (nextquery.trim() === '') {
-        toast.error('Please enter value of image');
+    if (prevquery !== nextquery || page !== prevState.page) {
+      try {
+        this.setState({ EndOfImages: false, isLoading: true });
 
-        return;
-      }
-      this.setState({ status: Status.PENDING, EndOfImages: false });
+        const newImages = await getImage(nextquery, page);
 
-      getImage(nextquery, page)
-        .then(newImages => {
-          this.setState({
-            images: newImages,
-            status: Status.RESOLVED,
-          });
+        this.setState(prevState => ({
+          images: [...prevState.images, ...newImages.hits],
+          status: Status.RESOLVED,
+          isLoading: false,
+          newImages,
+        }));
 
+        if (this.state.page === 1 && newImages.totalHits > 0) {
           toast.success(`Cool! We found ${newImages.totalHits} images`);
+        }
 
-          if (12 > newImages.totalHits) {
-            toast.warning(
-              `We are sorry but you have reached the end of images`
-            );
-            this.setState({ EndOfImages: true });
-          }
-        })
-        .catch(error => this.setState({ error, status: Status.REJECTED }));
+        const totalPages = Math.ceil(newImages.totalHits / 12);
+
+        if (
+          (newImages.totalHits !== 0 && newImages.totalHits < 12) ||
+          (totalPages !== 0 && page >= totalPages)
+        ) {
+          toast.warning(`We are sorry but you have reached the end of images`);
+        }
+
+        if (newImages.totalHits < 12 || page >= totalPages) {
+          this.setState({ EndOfImages: true });
+        }
+
+        if (newImages.totalHits === 0) {
+          toast.warning(`No images found with name ${nextquery}`);
+        }
+      } catch (error) {
+        this.setState({ error, status: Status.REJECTED });
+      }
     }
   }
 
   handleSearchBarSubmit = queryObj => {
     const query = queryObj.query;
-    this.setState({ query });
+
+    if (query.trim() === '') {
+      return toast.error('Please enter value of image');
+    }
+
+    if (query === this.state.query) {
+      return toast.warning(
+        `Meaning: ${query} Has already been found.  Please repeat your request`
+      );
+    }
+    this.setState({ query, page: 1, images: [] });
   };
 
   onLoadMoreClick = () => {
-    this.setState(
-      prevState => ({ page: prevState.page + 1 }),
-      () => {
-        const { page, query } = this.state;
-
-        getImage(query, page)
-          .then(newImages => {
-            const totalPages = Math.ceil(newImages.totalHits / 12);
-            if (page >= totalPages) {
-              this.setState({ EndOfImages: true });
-              toast.warning(
-                `We are sorry but you have reached the end of images`
-              );
-            }
-            this.setState(prevState => ({
-              images: { hits: [...prevState.images.hits, ...newImages.hits] },
-            }));
-          })
-          .catch(error => this.setState({ error }));
-      }
-    );
+    this.setState(prevState => ({
+      page: prevState.page + 1,
+    }));
   };
 
   toggleModal = imageForModal => {
@@ -102,49 +106,50 @@ export class App extends Component {
   };
 
   render() {
-    const { images, EndOfImages, showModal, imageForModal, status, error } =
-      this.state;
+    const {
+      images,
+      showModal,
+      imageForModal,
+      status,
+      error,
+      isLoading,
+      newImages,
+      page,
+      EndOfImages,
+    } = this.state;
 
-    if (status === 'idle') {
-      return (
+    const totalPages = Math.ceil(newImages.totalHits / 12);
+
+    return (
+      <>
+        <ToastContainer autoClose={3000} />
         <Section>
           <SearchBar onSubmit={this.handleSearchBarSubmit}></SearchBar>
-          <EmptyValue></EmptyValue>
         </Section>
-      );
-    }
+        {status === 'idle' && (
+          <>
+            <EmptyValue></EmptyValue>
+          </>
+        )}
 
-    if (status === 'pending') {
-      return <ImagePendingView />;
-    }
+        {isLoading && <ImagePendingView />}
 
-    if (status === 'rejected') {
-      return <TextErrorView message={error.message} />;
-    }
+        {status === 'rejected' && <TextErrorView message={error.message} />}
 
-    if (status === 'resolved') {
-      return (
-        <>
-          <Section>
-            <SearchBar onSubmit={this.handleSearchBarSubmit}></SearchBar>
-          </Section>
-          <Section>
-            <>
-              <ImageGallery>
-                <ImageGalleryItem
-                  images={images.hits}
-                  onClick={largeImageURL => this.toggleModal(largeImageURL)}
-                ></ImageGalleryItem>
-              </ImageGallery>
-              {!EndOfImages && <Button onClick={this.onLoadMoreClick}></Button>}
-            </>
-          </Section>
-          {showModal && (
-            <Modal onClose={this.toggleModal} image={imageForModal}></Modal>
-          )}
-          <ToastContainer autoClose={3000} />
-        </>
-      );
-    }
+        {status === 'resolved' && (
+          <>
+            <ImageGallery
+              onImgClick={this.toggleModal}
+              images={images}
+            ></ImageGallery>
+
+            {showModal && (
+              <Modal onClose={this.toggleModal} image={imageForModal}></Modal>
+            )}
+            {!EndOfImages && <Button onClick={this.onLoadMoreClick}></Button>}
+          </>
+        )}
+      </>
+    );
   }
 }

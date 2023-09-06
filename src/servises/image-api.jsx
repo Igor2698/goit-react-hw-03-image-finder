@@ -3,16 +3,8 @@ const keys = {
   API_KEY: '38581937-9c20710af1d4a9eb0308799a1',
 };
 
-const searchParams = new URLSearchParams({
-  key: keys.API_KEY,
-  image_type: 'photo',
-  orientation: 'horizontal',
-  safesearch: 'true',
-  per_page: 40,
-});
-
 export async function getImage(value, page = 1) {
-  const url = `${keys.BASE_URL}?${searchParams}&q=${value}&page=${page}&per_page=12`;
+  const url = `${keys.BASE_URL}?key=${keys.API_KEY}&q=${value}&page=${page}&per_page=12`;
   try {
     const response = await fetch(url);
     if (response.ok) {

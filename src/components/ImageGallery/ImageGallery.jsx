@@ -1,14 +1,30 @@
 import css from './ImageGallery.module.css';
 import PropTypes from 'prop-types';
+import ImageGalleryItem from 'components/ImageGalleryItem/ImageGalleryItem';
 
 import 'react-toastify/dist/ReactToastify.css';
 
-const ImageGallery = ({ children }) => {
-  return <ul className={css.listGallery}>{children}</ul>;
+const ImageGallery = ({ onImgClick, images }) => {
+  return (
+    <ul className={css.listGallery}>
+      <ImageGalleryItem
+        images={images}
+        onClick={largeImageURL => onImgClick(largeImageURL)}
+      ></ImageGalleryItem>
+    </ul>
+  );
 };
 
 export default ImageGallery;
 
 ImageGallery.propTypes = {
-  children: PropTypes.node.isRequired, 
+  images: PropTypes.arrayOf(
+    PropTypes.shape({
+      webformatURL: PropTypes.string.isRequired,
+      id: PropTypes.number.isRequired,
+      tags: PropTypes.string.isRequired,
+      largeImageURL: PropTypes.string.isRequired,
+    })
+  ),
+  onImgClick: PropTypes.func,
 };
